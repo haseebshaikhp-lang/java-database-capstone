@@ -1,5 +1,13 @@
 package com.project.back_end.controllers;
 
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+
+import com.project.back_end.models.Prescription;
+import com.project.back_end.services.PrescriptionService;
+import com.project.back_end.services.Service;
+
 @RestController
 @RequestMapping("${api.path}prescription")
 public class PrescriptionController {
