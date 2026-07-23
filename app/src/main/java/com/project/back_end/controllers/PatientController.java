@@ -1,5 +1,14 @@
 package com.project.back_end.controllers;
 
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+
+import com.project.back_end.models.Patient;
+import com.project.back_end.services.PatientService;
+import com.project.back_end.services.Service;
+import com.project.back_end.DTO.Login;
+
 @RestController
 @RequestMapping("/patient")
 public class PatientController {
