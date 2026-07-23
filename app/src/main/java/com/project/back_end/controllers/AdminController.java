@@ -1,13 +1,13 @@
 package com.project.back_end.controller;
 
-import java.util.Map;
-
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import java.util.Map;
 
-import com.example.model.Admin;
-import com.example.service.Service;
+import com.project.back_end.models.Admin;
+import com.project.back_end.services.Service;
 
 @RestController
 @RequestMapping("${api.path}admin")
