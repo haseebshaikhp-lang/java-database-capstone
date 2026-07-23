@@ -155,6 +155,36 @@ public class DoctorService {
         return result;
     }
 
+    public Map<String, Object> filterDoctorByNameAndSpecility(String name, String specialty) {
+        return filterDoctorByNameAndSpeciality(name, specialty);
+    }
+
+    public Map<String, Object> filterDoctorByTimeAndSpecility(String specialty, String amOrPm) {
+        Map<String, Object> result = new HashMap<>();
+
+        List<Doctor> doctors = doctorRepository.findBySpecialtyIgnoreCase(specialty);
+        List<Doctor> filtered = filterDoctorByTime(doctors, amOrPm);
+
+        result.put("doctors", filtered);
+        return result;
+    }
+
+    public Map<String, Object> filterDoctorBySpecility(String specialty) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("doctors", doctorRepository.findBySpecialtyIgnoreCase(specialty));
+        return result;
+    }
+
+    public Map<String, Object> filterDoctorsByTime(String amOrPm) {
+        Map<String, Object> result = new HashMap<>();
+
+        List<Doctor> doctors = doctorRepository.findAll();
+        List<Doctor> filtered = filterDoctorByTime(doctors, amOrPm);
+
+        result.put("doctors", filtered);
+        return result;
+    }
+
     private List<Doctor> filterDoctorByTime(List<Doctor> doctors, String amOrPm) {
         List<Doctor> filtered = new ArrayList<>();
         for (Doctor doctor : doctors) {
