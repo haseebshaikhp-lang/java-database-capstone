@@ -76,7 +76,20 @@ This hybrid database architecture allows the application to efficiently manage b
 | notes | String |
 | createdDate | Date |
 
----
+### Example Document
+
+```json
+{
+  "_id": "ObjectId('64abc123456')",
+  "appointmentId": 51,
+  "doctorId": 4,
+  "patientId": 12,
+  "medicines": [
+    { "name": "Paracetamol", "dosage": "500mg", "frequency": "Every 6 hours" }
+  ],
+  "notes": "Take with food.",
+  "createdDate": "2026-07-23"
+}
 
 # Entity Relationships
 
