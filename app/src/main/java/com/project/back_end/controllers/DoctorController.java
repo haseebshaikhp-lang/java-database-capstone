@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import java.time.LocalDate;
 import java.util.Map;
 
 import com.project.back_end.models.Doctor;
@@ -28,12 +29,14 @@ public class DoctorController {
             @PathVariable String date,
             @PathVariable String token) {
 
-        if (!service.validateToken(token, user))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, user);
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
+        }
 
+        LocalDate parsedDate = LocalDate.parse(date);
         return ResponseEntity.ok(
-                doctorService.getDoctorAvailability(doctorId, date));
+                doctorService.getDoctorAvailability(doctorId, parsedDate));
     }
 
     @GetMapping
@@ -46,11 +49,20 @@ public class DoctorController {
             @PathVariable String token,
             @RequestBody Doctor doctor) {
 
-        if (!service.validateToken(token, "admin"))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, "admin");
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
+        }
 
-        return doctorService.saveDoctor(doctor);
+        int result = doctorService.saveDoctor(doctor);
+        if (result == 1) {
+            return ResponseEntity.ok(Map.of("message", "Doctor added successfully"));
+        } else if (result == -1) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Doctor already exists"));
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Failed to add doctor"));
     }
 
     @PostMapping("/login")
@@ -63,11 +75,20 @@ public class DoctorController {
             @PathVariable String token,
             @RequestBody Doctor doctor) {
 
-        if (!service.validateToken(token, "admin"))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, "admin");
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
+        }
 
-        return doctorService.updateDoctor(doctor);
+        int result = doctorService.updateDoctor(doctor);
+        if (result == 1) {
+            return ResponseEntity.ok(Map.of("message", "Doctor updated successfully"));
+        } else if (result == -1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Doctor not found"));
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Failed to update doctor"));
     }
 
     @DeleteMapping("/{id}/{token}")
@@ -75,11 +96,20 @@ public class DoctorController {
             @PathVariable Long id,
             @PathVariable String token) {
 
-        if (!service.validateToken(token, "admin"))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, "admin");
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
+        }
 
-        return doctorService.deleteDoctor(id);
+        int result = doctorService.deleteDoctor(id);
+        if (result == 1) {
+            return ResponseEntity.ok(Map.of("message", "Doctor deleted successfully"));
+        } else if (result == -1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Doctor not found"));
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Failed to delete doctor"));
     }
 
     @GetMapping("/filter/{name}/{time}/{speciality}")
@@ -89,6 +119,6 @@ public class DoctorController {
             @PathVariable String speciality) {
 
         return ResponseEntity.ok(
-                service.filterDoctor(name, time, speciality));
+                service.filterDoctor(name, speciality, time));
     }
 }
