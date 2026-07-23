@@ -1,5 +1,6 @@
 package com.project.back_end.controllers;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,13 @@ public class AppointmentController {
             @PathVariable String patientName,
             @PathVariable String token) {
 
-        if (!service.validateToken(token, "doctor")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, "doctor");
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
         }
 
-        return ResponseEntity.ok(appointmentService.getAppointment(date, patientName));
+        LocalDate parsedDate = LocalDate.parse(date);
+        return ResponseEntity.ok(appointmentService.getAppointment(patientName, parsedDate, token));
     }
 
     @PostMapping("/{token}")
@@ -39,17 +41,23 @@ public class AppointmentController {
             @PathVariable String token,
             @RequestBody Appointment appointment) {
 
-        if (!service.validateToken(token, "patient")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, "patient");
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
         }
 
-        if (!service.validateAppointment(appointment)) {
+        int validationResult = service.validateAppointment(appointment);
+        if (validationResult != 1) {
             return ResponseEntity.badRequest()
                     .body(Map.of("message", "Invalid Appointment"));
         }
 
-        return appointmentService.bookAppointment(appointment);
+        int result = appointmentService.bookAppointment(appointment);
+        if (result == 1) {
+            return ResponseEntity.ok(Map.of("message", "Appointment booked successfully"));
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Failed to book appointment"));
     }
 
     @PutMapping("/{token}")
@@ -57,9 +65,9 @@ public class AppointmentController {
             @PathVariable String token,
             @RequestBody Appointment appointment) {
 
-        if (!service.validateToken(token, "patient")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, "patient");
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
         }
 
         return appointmentService.updateAppointment(appointment);
@@ -70,11 +78,11 @@ public class AppointmentController {
             @PathVariable Long id,
             @PathVariable String token) {
 
-        if (!service.validateToken(token, "patient")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, "patient");
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
         }
 
-        return appointmentService.cancelAppointment(id);
+        return appointmentService.cancelAppointment(id, token);
     }
 }
