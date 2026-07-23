@@ -10,14 +10,13 @@ import com.project.back_end.repository.DoctorRepository;
 import com.project.back_end.repository.PatientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service("appService")
+@org.springframework.stereotype.Service("appService")
 public class Service {
 
     private final TokenService tokenService;
