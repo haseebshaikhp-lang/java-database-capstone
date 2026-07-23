@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.model.Appointment;
-import com.example.service.AppointmentService;
-import com.example.service.Service;
+import com.project.back_end.models.Appointment;
+import com.project.back_end.services.AppointmentService;
+import com.project.back_end.services.Service;
 
 @RestController
 @RequestMapping("/appointments")
