@@ -1,4 +1,4 @@
-package com.project.back_end.Doctor;
+package com.project.back_end.controllers;;
 
 @RestController
 @RequestMapping("${api.path}doctor")
