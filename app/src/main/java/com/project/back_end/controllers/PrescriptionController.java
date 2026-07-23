@@ -3,6 +3,8 @@ package com.project.back_end.controllers;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import java.util.Map;
 
 import com.project.back_end.models.Prescription;
 import com.project.back_end.services.PrescriptionService;
@@ -23,9 +25,10 @@ public class PrescriptionController {
             @PathVariable String token,
             @RequestBody Prescription prescription) {
 
-        if (!service.validateToken(token, "doctor"))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, "doctor");
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
+        }
 
         return prescriptionService.savePrescription(prescription);
     }
@@ -35,9 +38,10 @@ public class PrescriptionController {
             @PathVariable Long appointmentId,
             @PathVariable String token) {
 
-        if (!service.validateToken(token, "doctor"))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid Token"));
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, "doctor");
+        if (validation.getStatusCode() != HttpStatus.OK) {
+            return validation;
+        }
 
         return prescriptionService.getPrescription(appointmentId);
     }
