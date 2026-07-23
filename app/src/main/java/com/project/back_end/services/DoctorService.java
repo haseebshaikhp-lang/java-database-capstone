@@ -129,6 +129,32 @@ public class DoctorService {
         return result;
     }
 
+    /**
+     * Filters doctors by name, then narrows down by AM/PM availability.
+     */
+    public Map<String, Object> filterDoctorByNameAndTime(String name, String amOrPm) {
+        Map<String, Object> result = new HashMap<>();
+
+        List<Doctor> doctors = doctorRepository.findByNameLike(name);
+        List<Doctor> filtered = filterDoctorByTime(doctors, amOrPm);
+
+        result.put("doctors", filtered);
+        return result;
+    }
+
+    /**
+     * Filters doctors by name and specialty (no time filter).
+     */
+    public Map<String, Object> filterDoctorByNameAndSpeciality(String name, String specialty) {
+        Map<String, Object> result = new HashMap<>();
+
+        List<Doctor> doctors = doctorRepository
+                .findByNameContainingIgnoreCaseAndSpecialtyIgnoreCase(name, specialty);
+
+        result.put("doctors", doctors);
+        return result;
+    }
+
     private List<Doctor> filterDoctorByTime(List<Doctor> doctors, String amOrPm) {
         List<Doctor> filtered = new ArrayList<>();
         for (Doctor doctor : doctors) {
