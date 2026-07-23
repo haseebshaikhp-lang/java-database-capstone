@@ -5,5 +5,8 @@ This Spring Boot application uses both MVC and REST controllers. Thymeleaf templ
 Section 2: Numbered flow of data and control
 1. User accesses AdminDashboard or Appointment pages.
 2. The action is routed to the appropriate Thymeleaf or REST controller.
-3. The controller calls the service layer...
-...
+3. The controller calls the service layer to apply business logic and validation.
+4. The service layer calls the appropriate repository — MySQL (JPA) or MongoDB — depending on the data type.
+5. The repository communicates with the database engine to fetch or persist data.
+6. Retrieved data is bound into Java model classes — JPA @Entity for MySQL, @Document for MongoDB.
+7. The models are returned to the controller: rendered as HTML via Thymeleaf for MVC flows, or serialized to JSON for REST flows.
