@@ -1,43 +1,40 @@
-package com.project.back_end.mvc;
+cat > /home/project/capstone/app/src/main/java/com/project/back_end/controllers/DashboardController.java << 'EOF'
+package com.project.back_end.controllers;
 
-import java.util.Map;
-
+import com.project.back_end.services.TokenValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.project.back_end.services.Service;
+import java.util.Map;
 
 @Controller
 public class DashboardController {
 
     @Autowired
-    private Service service;
+    private TokenValidationService tokenValidationService;
 
     @GetMapping("/adminDashboard/{token}")
     public String adminDashboard(@PathVariable String token) {
+        Map<String, String> validationResult = tokenValidationService.validateToken(token, "admin");
 
-        ResponseEntity<Map<String, String>> response = service.validateToken(token, "admin");
-
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return "redirect:/";
+        if (validationResult.isEmpty()) {
+            return "admin/adminDashboard";
+        } else {
+            return "redirect:http://localhost:8080";
         }
-
-        return "admin/adminDashboard";
     }
 
     @GetMapping("/doctorDashboard/{token}")
     public String doctorDashboard(@PathVariable String token) {
+        Map<String, String> validationResult = tokenValidationService.validateToken(token, "doctor");
 
-        ResponseEntity<Map<String, String>> response = service.validateToken(token, "doctor");
-
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return "redirect:/";
+        if (validationResult.isEmpty()) {
+            return "doctor/doctorDashboard";
+        } else {
+            return "redirect:http://localhost:8080";
         }
-
-        return "doctor/doctorDashboard";
     }
 }
+EOF
