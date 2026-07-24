@@ -1,48 +1,20 @@
-// patientRecordServices.js
-import { getPatientAppointments } from "./services/patientServices.js";
-import { createPatientRecordRow } from './components/patientRecordRow.js';
+// patientRecordServices.js - loads a patient's prescription/record history
+import { getPrescriptionsForPatient } from "./services/prescriptionServices.js";
+import { createPatientRecordRow } from "./components/patientRecordRow.js";
 
-const tableBody = document.getElementById("patientTableBody");
-const token = localStorage.getItem("token");
+async function loadRecords() {
+  const tbody = document.getElementById("recordTableBody");
+  const token = localStorage.getItem("token");
+  const params = new URLSearchParams(window.location.search);
+  const patientId = params.get("patientId");
 
-const urlParams = new URLSearchParams(window.location.search);
-const patientId = urlParams.get("id");
-const doctorId = urlParams.get("doctorId");
-
-document.addEventListener("DOMContentLoaded", initializePage);
-
-async function initializePage() {
   try {
-    if (!token) throw new Error("No token found");
-
-    const appointmentData = await getPatientAppointments(patientId, token, "doctor") || [];
-
-    // Filter by both patientId and doctorId
-    const filteredAppointments = appointmentData.filter(app =>
-      app.doctorId == doctorId);
-    console.log(filteredAppointments)
-    renderAppointments(filteredAppointments);
-  } catch (error) {
-    console.error("Error loading appointments:", error);
-    alert("❌ Failed to load your appointments.");
+    const records = await getPrescriptionsForPatient(patientId, token);
+    tbody.innerHTML = "";
+    records.forEach(r => tbody.appendChild(createPatientRecordRow(r)));
+  } catch (err) {
+    tbody.innerHTML = <tr><td class="noPatientRecord" colspan="5">No records found.</td></tr>;
   }
 }
 
-function renderAppointments(appointments) {
-  tableBody.innerHTML = "";
-
-  const actionTh = document.querySelector("#patientTable thead tr th:last-child");
-  if (actionTh) {
-    actionTh.style.display = "table-cell"; // Always show "Actions" column
-  }
-
-  if (!appointments.length) {
-    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No Appointments Found</td></tr>`;
-    return;
-  }
-
-  appointments.forEach(appointment => {
-    const row = createPatientRecordRow(appointment);
-    tableBody.appendChild(row);
-  });
-}
+document.addEventListener("DOMContentLoaded", loadRecords);
