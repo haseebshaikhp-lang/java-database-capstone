@@ -1,97 +1,72 @@
-// patientServices
 import { API_BASE_URL } from "../config/config.js";
-const PATIENT_API = API_BASE_URL + '/patient'
 
+const PATIENT_API = API_BASE_URL + "/patient";
 
-//For creating a patient in db
 export async function patientSignup(data) {
   try {
-    const response = await fetch(`${PATIENT_API}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify(data)
-      }
-    );
+    const response = await fetch(PATIENT_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
     const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.message);
-    }
-    return { success: response.ok, message: result.message }
-  }
-  catch (error) {
-    console.error("Error :: patientSignup :: ", error)
-    return { success: false, message: error.message }
+    return { success: response.ok, message: result.message };
+  } catch (error) {
+    console.error("Signup error:", error);
+    return { success: false, message: "Error during signup" };
   }
 }
 
-//For logging in patient
 export async function patientLogin(data) {
-  console.log("patientLogin :: ", data)
-  return await fetch(`${PATIENT_API}/login`, {
+  console.log("Attempting login with:", data);
+  return await fetch(${PATIENT_API}/login, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
   });
-
-
 }
 
-// For getting patient data (name ,id , etc ). Used in booking appointments
 export async function getPatientData(token) {
   try {
-    const response = await fetch(`${PATIENT_API}/${token}`);
+    const response = await fetch(${PATIENT_API}/${token});
+    if (!response.ok) return null;
     const data = await response.json();
-    if (response.ok) return data.patient;
-    return null;
+    return data.patient || data;
   } catch (error) {
-    console.error("Error fetching patient details:", error);
+    console.error("Error fetching patient data:", error);
     return null;
   }
 }
 
-// the Backend API for fetching the patient record(visible in Doctor Dashboard) and Appointments (visible in Patient Dashboard) are same based on user(patient/doctor).
 export async function getPatientAppointments(id, token, user) {
   try {
-    const response = await fetch(`${PATIENT_API}/${id}/${user}/${token}`);
+    const url = user === "doctor"
+      ? ${PATIENT_API}/${id}/${token}
+      : ${PATIENT_API}/${id}/${token};
+    const response = await fetch(url);
+    if (!response.ok) return null;
     const data = await response.json();
-    console.log(data.appointments)
-    if (response.ok) {
-      return data.appointments;
-    }
-    return null;
-  }
-  catch (error) {
-    console.error("Error fetching patient details:", error);
+    return data.appointments || data;
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
     return null;
   }
 }
 
 export async function filterAppointments(condition, name, token) {
   try {
-    const response = await fetch(`${PATIENT_API}/filter/${condition}/${name}/${token}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-
-    } else {
-      console.error("Failed to fetch doctors:", response.statusText);
-      return { appointments: [] };
-
+    const c = condition || "null";
+    const n = name || "null";
+    const response = await fetch(${PATIENT_API}/filter/${c}/${n}/${token});
+    if (!response.ok) {
+      console.error("Failed to filter appointments");
+      return [];
     }
+    const data = await response.json();
+    return data.appointments || data || [];
   } catch (error) {
-    console.error("Error:", error);
-    alert("Something went wrong!");
-    return { appointments: [] };
+    console.error("Error filtering appointments:", error);
+    alert("Something went wrong filtering appointments!");
+    return [];
   }
 }
