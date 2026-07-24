@@ -1,4 +1,3 @@
-cat > /home/project/capstone/app/src/main/java/com/project/back_end/services/TokenValidationService.java << 'EOF'
 package com.project.back_end.services;
 
 import org.springframework.stereotype.Service;
