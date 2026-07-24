@@ -1,10 +1,10 @@
-<!-- doctorDashboard.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" th:href="@{/assets/images/logo/logo.png}" />
-  <title>Doctor Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DoctorDashboard</title>
+  <link rel="icon" th:href="@{/assets/images/logo/logo.png}" type="image/png" />
 
   <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}">
   <link rel="stylesheet" th:href="@{/assets/css/doctorDashboard.css}">
@@ -14,43 +14,48 @@
   <script th:src="@{/js/util.js}" defer></script>
   <script th:src="@{/js/components/header.js}" defer></script>
   <script th:src="@{/js/components/footer.js}" defer></script>
-  <script type="module" th:src="@{/js/doctorDashboard.js}" defer></script>
+  <script th:src="@{/js/components/patientRows.js}" defer></script>
 </head>
 <body onload="renderContent()">
-
   <div class="container">
     <div class="wrapper">
 
       <div id="header"></div>
 
-      <div class="main-content">
+      <main class="main-content">
+        <input type="text" id="searchBar" class="input-field" placeholder="search by patient name" />
 
-        <input type="text" id="searchBar" class="searchBar" placeholder="Search Bar for custom output" />
-
-        <div class="filters">
-          <button id="todayButton" class="today-btn">Today</button>
-          <input type="date" id="datePicker" class="date-picker" />
+        <div class="filter-wrapper">
+          <button id="todayBtn" class="dashboard-btn">Today's Appointments</button>
+          <input type="date" id="dateFilter" class="input-field" />
         </div>
 
-        <table>
+        <table id="patientTable">
           <thead>
             <tr>
               <th>Patient ID</th>
               <th>Name</th>
-              <th>Phone No.</th>
+              <th>Phone</th>
               <th>Email</th>
               <th>Prescription</th>
             </tr>
           </thead>
-          <tbody id="patientTableBody"></tbody>
+          <tbody id="patientTableBody">
+            <!-- rows injected by doctorDashboard.js -->
+          </tbody>
         </table>
-
-      </div>
+      </main>
 
       <div id="footer"></div>
-
     </div>
   </div>
 
+  <div id="modal" class="modal">
+    <span id="closeModal" class="close">&times;</span>
+    <div id="modal-body"></div>
+  </div>
+
+  <script type="module" th:src="@{/js/services/patientServices.js}" defer></script>
+  <script type="module" th:src="@{/js/doctorDashboard.js}" defer></script>
 </body>
 </html>
