@@ -1,102 +1,70 @@
-[6:25 am, 24/07/2026] Muhammad Haseeb: import { API_BASE_URL } from "../config/config.js";
+// adminDashboard.js - page logic for the Admin Dashboard
 
-const APPOINTMENT_API = API_BASE_URL + "/appointments";
-
-export async function getAllAppointments(date, patientName, token) {
-  try {
-    const name = patientName || "null";
-    const response = await fetch(${APPOINTMENT_API}/${date}/${name}/${token});
-    if (!response.ok) return [];
-    const data = await response.json();
-    return data.appointments || data || [];
-  } catch (error) {
-    console.error("Error fetching appointments:", error);
-    return [];
-  }
-}
-
-export async function bookAppointment(appointment, token) {
-  try {
-    const response = await fetch(${APPOINTMENT_API}/${token}, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(appointme…
-[6:26 am, 24/07/2026] Muhammad Haseeb: import { openModal } from "./components/modals.js";
-import { getDoctors, filterDoctors, saveDoctor } from "./services/doctorServices.js";
+import { getAllDoctors, filterDoctors, addDoctor } from "./services/doctorServices.js";
 import { createDoctorCard } from "./components/doctorCard.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const addDocBtn = document.getElementById("addDocBtn");
-  if (addDocBtn) {
-    addDocBtn.addEventListener("click", () => openModal("addDoctor"));
+const contentDiv = document.getElementById("content");
+const searchBar = document.getElementById("searchBar");
+const filterTime = document.getElementById("filterTime");
+const filterSpecialty = document.getElementById("filterSpecialty");
+
+async function loadDoctors() {
+  try {
+    const doctors = await getAllDoctors();
+    renderDoctors(doctors);
+  } catch (err) {
+    contentDiv.innerHTML = <p class="noPatientRecord">Unable to load doctors right now.</p>;
   }
+}
 
-  loadDoctorCards();
+function renderDoctors(doctors) {
+  contentDiv.innerHTML = "";
+  if (!doctors || doctors.length === 0) {
+    contentDiv.innerHTML = <p class="noPatientRecord">No doctors found.</p>;
+    return;
+  }
+  doctors.forEach(doctor => contentDiv.appendChild(createDoctorCard(doctor)));
+}
 
-  const searchBar = document.getElementById("searchBar");
-  if (searchBar) searchBar.addEventListener("input", filterDoctorsOnChange);
+async function applyFilters() {
+  try {
+    const doctors = await filterDoctors(
+      searchBar.value.trim(),
+      filterTime.value,
+      filterSpecialty.value
+    );
+    renderDoctors(doctors);
+  } catch (err) {
+    showAlert("Unable to filter doctors right now.");
+  }
+}
 
-  const filterTime = document.getElementById("filterTime");
-  if (filterTime) filterTime.addEventListener("change", filterDoctorsOnChange);
+searchBar.addEventListener("input", applyFilters);
+filterTime.addEventListener("change", applyFilters);
+filterSpecialty.addEventListener("change", applyFilters);
 
-  const filterSpecialty = document.getElementById("filterSpecialty");
-  if (filterSpecialty) filterSpecialty.addEventListener("change", filterDoctorsOnChange);
+// Handle the "Add Doctor" modal form submit (form is injected dynamically by modals.js)
+document.addEventListener("submit", async (e) => {
+  if (e.target && e.target.id === "addDoctorForm") {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+
+    const doctorData = {
+      name: document.getElementById("docName").value,
+      specialty: document.getElementById("docSpecialty").value,
+      email: document.getElementById("docEmail").value,
+      password: document.getElementById("docPassword").value,
+      phone: document.getElementById("docPhone").value
+    };
+
+    try {
+      await addDoctor(doctorData, token);
+      closeModal();
+      loadDoctors();
+    } catch (err) {
+      showAlert("Failed to add doctor. Please check the details and try again.");
+    }
+  }
 });
 
-async function loadDoctorCards() {
-  const doctors = await getDoctors();
-  renderDoctorCards(doctors);
-}
-
-function renderDoctorCards(doctors) {
-  const contentDiv = document.getElementById("content");
-  contentDiv.innerHTML = "";
-
-  if (!doctors || doctors.length === 0) {
-    contentDiv.innerHTML = "<p>No doctors found</p>";
-    return;
-  }
-
-  doctors.forEach((doctor) => {
-    const card = createDoctorCard(doctor);
-    contentDiv.appendChild(card);
-  });
-}
-
-async function filterDoctorsOnChange() {
-  const name = document.getElementById("searchBar").value || null;
-  const time = document.getElementById("filterTime").value || null;
-  const specialty = document.getElementById("filterSpecialty").value || null;
-
-  const doctors = await filterDoctors(name, time, specialty);
-  renderDoctorCards(doctors);
-}
-
-window.adminAddDoctor = async function () {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("You must be logged in as admin.");
-    return;
-  }
-
-  const name = document.getElementById("doctorName").value;
-  const specialty = document.getElementById("specialization").value;
-  const email = document.getElementById("doctorEmail").value;
-  const password = document.getElementById("doctorPassword").value;
-  const phone = document.getElementById("doctorPhone").value;
-
-  const checkboxes = document.querySelectorAll('input[name="availability"]:checked');
-  const availableTimes = Array.from(checkboxes).map((cb) => cb.value);
-
-  const doctor = { name, specialty, email, password, phone, availableTimes };
-
-  const result = await saveDoctor(doctor, token);
-
-  if (result.success) {
-    alert("Doctor added successfully!");
-    document.getElementById("modal").style.display = "none";
-    loadDoctorCards();
-  } else {
-    alert(result.message || "Failed to add doctor");
-  }
-};
+document.addEventListener("DOMContentLoaded", loadDoctors);
