@@ -47,7 +47,7 @@ window.adminLoginHandler = async function () {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      window.location.href = /adminDashboard/${data.token};
+      window.location.href = `/adminDashboard/${data.token}`;
     } else {
       alert('Invalid credentials!');
     }
@@ -73,7 +73,7 @@ window.doctorLoginHandler = async function () {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      window.location.href = /doctorDashboard/${data.token};
+      window.location.href = `/doctorDashboard/${data.token}`;
     } else {
       alert('Invalid credentials!');
     }
