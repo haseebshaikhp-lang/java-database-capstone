@@ -1,13 +1,16 @@
-// util.js
-  function setRole(role) {
-    localStorage.setItem("userRole", role);
-  }
-  
-  function getRole() {
-    return localStorage.getItem("userRole");
-  }
-  
-  function clearRole() {
-    localStorage.removeItem("userRole");
-  }
-  
+function getToken() {
+  return localStorage.getItem("token");
+}
+
+function getRole() {
+  return localStorage.getItem("userRole");
+}
+
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString();
+}
+
+function showAlert(message) {
+  alert(message);
+}
