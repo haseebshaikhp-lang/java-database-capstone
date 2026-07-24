@@ -81,4 +81,4 @@ window.doctorLoginHandler = async function () {
     alert('Something went wrong. Please try again later.');
     console.error('Doctor login error:', error);
   }
-};
+}
