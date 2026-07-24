@@ -1,10 +1,10 @@
-<!-- adminDashboard.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" th:href="@{/assets/images/logo/logo.png}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
+  <link rel="icon" th:href="@{/assets/images/logo/logo.png}" type="image/png" />
 
   <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}">
   <link rel="stylesheet" th:href="@{/assets/css/style.css}">
@@ -13,53 +13,45 @@
   <script th:src="@{/js/util.js}" defer></script>
   <script th:src="@{/js/components/header.js}" defer></script>
   <script th:src="@{/js/components/footer.js}" defer></script>
+  <script th:src="@{/js/components/modals.js}" defer></script>
 </head>
 <body onload="renderContent()">
-
   <div class="container">
     <div class="wrapper">
 
       <div id="header"></div>
 
       <main class="main-content">
+        <input type="text" id="searchBar" class="input-field" placeholder="search by doctor name" />
 
-        <input type="text" id="searchBar" placeholder="Search doctor by name...">
-
-        <div class="filters">
-          <select id="filterTime">
-            <option value="">All Times</option>
+        <div class="filter-wrapper">
+          <select id="filterTime" class="select-dropdown">
+            <option value="">Sort by time</option>
             <option value="AM">AM</option>
             <option value="PM">PM</option>
           </select>
-
-          <select id="filterSpecialty">
-            <option value="">All Specialties</option>
-            <option value="cardiologist">Cardiologist</option>
-            <option value="dentist">Dentist</option>
-            <option value="dermatologist">Dermatologist</option>
-            <option value="neurologist">Neurologist</option>
-            <option value="pediatrician">Pediatrician</option>
+          <select id="filterSpecialty" class="select-dropdown">
+            <option value="">All specialties</option>
+            <option value="cardiology">Cardiology</option>
+            <option value="dermatology">Dermatology</option>
+            <option value="pediatrics">Pediatrics</option>
+            <option value="general">General Practice</option>
           </select>
         </div>
 
         <div id="content"></div>
-
       </main>
 
       <div id="footer"></div>
-
     </div>
   </div>
 
   <div id="modal" class="modal">
-    <div class="modal-content">
-      <span id="closeModal" class="close">&times;</span>
-      <div id="modal-body"></div>
-    </div>
+    <span id="closeModal" class="close">&times;</span>
+    <div id="modal-body"></div>
   </div>
 
-  <script type="module" src="../../static/js/adminDashboard.js" defer></script>
-  <script type="module" src="../../static/js/doctorDashboard.js" defer></script>
-
+  <script type="module" th:src="@{/js/adminDashboard.js}" defer></script>
+  <script type="module" th:src="@{/js/components/doctorCard.js}" defer></script>
 </body>
 </html>
