@@ -1,3 +1,4 @@
+cat > /home/project/capstone/app/src/main/resources/templates/doctor/doctorDashboard.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -14,7 +15,6 @@
   <script th:src="@{/js/util.js}" defer></script>
   <script th:src="@{/js/components/header.js}" defer></script>
   <script th:src="@{/js/components/footer.js}" defer></script>
-  <script th:src="@{/js/components/patientRows.js}" defer></script>
 </head>
 <body onload="renderContent()">
   <div class="container">
@@ -26,8 +26,8 @@
         <input type="text" id="searchBar" class="input-field" placeholder="search by patient name" />
 
         <div class="filter-wrapper">
-          <button id="todayBtn" class="dashboard-btn">Today's Appointments</button>
-          <input type="date" id="dateFilter" class="input-field" />
+          <button id="todayButton" class="dashboard-btn">Today's Appointments</button>
+          <input type="date" id="datePicker" class="input-field" />
         </div>
 
         <table id="patientTable">
@@ -55,7 +55,8 @@
     <div id="modal-body"></div>
   </div>
 
-  <script type="module" th:src="@{/js/services/patientServices.js}" defer></script>
   <script type="module" th:src="@{/js/doctorDashboard.js}" defer></script>
 </body>
 </html>
+EOF
+echo done
