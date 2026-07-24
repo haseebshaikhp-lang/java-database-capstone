@@ -41,12 +41,15 @@ function getModalContent(type) {
 
     case "patientLogin":
       return `
-        <h2>Patient Login</h2>
-        <form onsubmit="event.preventDefault(); loginPatient();">
-          <input class="input-field" type="email" id="loginEmail" placeholder="Email" required />
-          <input class="input-field" type="password" id="loginPassword" placeholder="Password" required />
-          <button type="submit" class="dashboard-btn">Login</button>
-        </form>`;
+        if (type === 'patientLogin') {
+  return `
+    <h2>Patient Login</h2>
+    <input type="email" id="patientEmail" placeholder="Email" />
+    <input type="password" id="patientPassword" placeholder="Password" />
+    <button class="button" onclick="patientLoginHandler()">Login</button>
+    <p>New here? <a href="#" onclick="openModal('patientSignup')">Create an account</a></p>
+  `;
+}
 
     case "patientSignup":
       return `
@@ -117,5 +120,3 @@ window.showBookingOverlay = function (event, doctor, patientData) {
     overlay.classList.remove("active");
   });
 };
-EOF
-echo done
