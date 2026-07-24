@@ -2,22 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Select Role</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinic Management System</title>
+  <link rel="icon" href="./assets/images/logo/logo.png" type="image/png" />
 
-  <!-- FIXED PATHS -->
-  <link rel="icon" href="assets/images/logo/logo.png">
-  <link rel="stylesheet" href="assets/css/index.css">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="./assets/css/index.css">
+  <link rel="stylesheet" href="./assets/css/style.css">
 
-  <!-- JS -->
-  <script src="js/util.js" defer></script>
-  <script src="js/render.js" defer></script>
-  <script src="js/components/header.js" defer></script>
-  <script src="js/components/footer.js" defer></script>
+  <!-- Utility / render JS -->
+  <script src="./js/util.js" defer></script>
+  <script src="./js/render.js" defer></script>
+
+  <!-- Components -->
+  <script src="./js/components/header.js" defer></script>
+  <script src="./js/components/footer.js" defer></script>
 </head>
-
 <body>
-
   <div class="container">
     <div class="wrapper">
 
@@ -25,43 +26,23 @@
 
       <main class="main-content">
         <h2>Select Your Role</h2>
-
-        <button id="adminLogin" class="adminBtn">Admin</button>
-        <button id="patientLogin" class="adminBtn">Patient</button>
-        <button id="doctorLogin" class="adminBtn">Doctor</button>
+        <div class="role-buttons">
+          <button id="adminBtn" class="button" onclick="selectRole('admin')">Admin</button>
+          <button id="doctorBtn" class="button" onclick="selectRole('doctor')">Doctor</button>
+          <button id="patientBtn" class="button" onclick="selectRole('patient')">Patient</button>
+        </div>
       </main>
 
       <div id="footer"></div>
-
     </div>
   </div>
 
   <!-- Modal -->
   <div id="modal" class="modal">
-    <div class="modal-content">
-      <span id="closeModal" class="close">&times;</span>
-      <div id="modal-body"></div>
-    </div>
+    <span id="closeModal" class="close">&times;</span>
+    <div id="modal-body"></div>
   </div>
 
-  <!-- BUTTON LOGIC -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-      document.getElementById("adminLogin").addEventListener("click", function () {
-        window.location.href = "admin/login.html";
-      });
-
-      document.getElementById("doctorLogin").addEventListener("click", function () {
-        window.location.href = "doctor/login.html";
-      });
-
-      document.getElementById("patientLogin").addEventListener("click", function () {
-        window.location.href = "patient/login.html";
-      });
-
-    });
-  </script>
-
+  <script type="module" src="./js/services/index.js" defer></script>
 </body>
 </html>
