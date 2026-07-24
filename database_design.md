@@ -1,4 +1,4 @@
-# Smart Clinic Management System - Database Design
+# Smart Clinic Management System - schema_design.md
 
 ## Overview
 
