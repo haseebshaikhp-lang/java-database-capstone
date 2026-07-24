@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class TokenValidationService {
+public class TokenService {
 
     /**
      * Validates a token against the expected role.
