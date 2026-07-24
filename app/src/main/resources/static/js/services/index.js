@@ -1,11 +1,19 @@
-cat > /home/project/capstone/app/src/main/resources/static/js/services/index.js << 'EOF'
-// index.js - Role-Based Login Handling (landing page)
-
 import { openModal } from "../components/modals.js";
 import { API_BASE_URL } from "../config/config.js";
 
 const ADMIN_API = API_BASE_URL + '/admin';
 const DOCTOR_API = API_BASE_URL + '/doctor/login';
+
+// Called by the role-selection buttons (Admin / Doctor / Patient)
+window.selectRole = function (role) {
+  if (role === 'admin') {
+    openModal('adminLogin');
+  } else if (role === 'doctor') {
+    openModal('doctorLogin');
+  } else if (role === 'patient') {
+    window.location.href = '/pages/patientDashboard.html';
+  }
+};
 
 window.onload = function () {
   const adminBtn = document.getElementById('adminLogin');
@@ -39,7 +47,7 @@ window.adminLoginHandler = async function () {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      selectRole('admin');
+      window.location.href = /adminDashboard/${data.token};
     } else {
       alert('Invalid credentials!');
     }
@@ -65,7 +73,7 @@ window.doctorLoginHandler = async function () {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      selectRole('doctor');
+      window.location.href = /doctorDashboard/${data.token};
     } else {
       alert('Invalid credentials!');
     }
@@ -74,5 +82,3 @@ window.doctorLoginHandler = async function () {
     console.error('Doctor login error:', error);
   }
 };
-EOF
-echo done
