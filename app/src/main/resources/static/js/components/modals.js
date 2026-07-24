@@ -1,81 +1,68 @@
-import { openModal } from "../components/modals.js";
-import { API_BASE_URL } from "../config/config.js";
-import { selectRole } from "../render.js";
+// modals.js - builds the HTML injected into #modal-body for each modal type,
+// plus the bottom sliding "booking" overlay used on the patient dashboard.
 
-const ADMIN_API = API_BASE_URL + "/admin";
-const DOCTOR_API = API_BASE_URL + "/doctor/login";
+window.getModalContent = function (type) {
+  switch (type) {
+    case "addDoctor":
+      return `
+        <h2>Add Doctor</h2>
+        <form id="addDoctorForm">
+          <input class="input-field" type="text" id="docName" placeholder="Full name" required />
+          <input class="input-field" type="text" id="docSpecialty" placeholder="Specialty" required />
+          <input class="input-field" type="email" id="docEmail" placeholder="Email" required />
+          <input class="input-field" type="password" id="docPassword" placeholder="Temporary password" required />
+          <input class="input-field" type="text" id="docPhone" placeholder="Phone number" required />
+          <button type="submit" class="dashboard-btn">Save Doctor</button>
+        </form>`;
 
-window.onload = function () {
-  const adminBtn = document.getElementById("adminLogin");
-  if (adminBtn) {
-    adminBtn.addEventListener("click", () => {
-      openModal("adminLogin");
-    });
-  }
+    case "patientLogin":
+      return `
+        <h2>Patient Login</h2>
+        <form id="patientLoginForm">
+          <input class="input-field" type="email" id="loginEmail" placeholder="Email" required />
+          <input class="input-field" type="password" id="loginPassword" placeholder="Password" required />
+          <button type="submit" class="dashboard-btn">Login</button>
+        </form>`;
 
-  const doctorBtn = document.getElementById("doctorLogin");
-  if (doctorBtn) {
-    doctorBtn.addEventListener("click", () => {
-      openModal("doctorLogin");
-    });
-  }
+    case "patientSignup":
+      return `
+        <h2>Patient Sign Up</h2>
+        <form id="patientSignupForm">
+          <input class="input-field" type="text" id="signupName" placeholder="Full name" required />
+          <input class="input-field" type="email" id="signupEmail" placeholder="Email" required />
+          <input class="input-field" type="password" id="signupPassword" placeholder="Password" required />
+          <input class="input-field" type="text" id="signupPhone" placeholder="Phone number" required />
+          <button type="submit" class="dashboard-btn">Create Account</button>
+        </form>`;
 
-  const patientBtn = document.getElementById("patient-btn");
-  if (patientBtn) {
-    patientBtn.addEventListener("click", () => {
-      selectRole("patient");
-    });
-  }
-};
-
-window.adminLoginHandler = async function () {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-
-  const admin = { username, password };
-
-  try {
-    const response = await fetch(ADMIN_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(admin),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-      selectRole("admin");
-    } else {
-      alert("Invalid credentials!");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Something went wrong!");
+    default:
+      return "";
   }
 };
 
-window.doctorLoginHandler = async function () {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const doctor = { email, password };
-
-  try {
-    const response = await fetch(DOCTOR_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(doctor),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-      selectRole("doctor");
-    } else {
-      alert("Invalid credentials!");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Something went wrong!");
+/** Slides the booking overlay up from the bottom of the screen for a given doctor. */
+window.showBookingOverlay = function (event, doctor, patientData) {
+  let overlay = document.getElementById("bookingOverlay");
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.id = "bookingOverlay";
+    overlay.classList.add("modalApp");
+    document.body.appendChild(overlay);
   }
+
+  overlay.innerHTML = `
+    <span class="close" id="closeBooking">&times;</span>
+    <h2>Book Appointment with Dr. ${doctor.name}</h2>
+    <p>Patient: ${patientData?.name || "Guest"}</p>
+    <input class="input-field" type="date" id="bookingDate" />
+    <select class="select-dropdown" id="bookingTime">
+      ${(doctor.availableTimes || []).map(t => <option value="${t}">${t}</option>).join("")}
+    </select>
+    <button class="dashboard-btn" id="confirmBooking">Confirm Booking</button>`;
+
+  overlay.classList.add("active");
+
+  document.getElementById("closeBooking").addEventListener("click", () => {
+    overlay.classList.remove("active");
+  });
 };
