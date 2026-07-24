@@ -1,81 +1,35 @@
-function renderHeader() {
-  const headerDiv = document.getElementById("header");
-  if (!headerDiv) return;
+function renderFooter() {
+  const footer = document.getElementById("footer");
+  if (!footer) return;
 
-  if (window.location.pathname.endsWith("/")) {
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("token");
-  }
-
-  const role = localStorage.getItem("userRole");
-  const token = localStorage.getItem("token");
-
-  if ((role === "loggedPatient" || role === "admin" || role === "doctor") && !token) {
-    localStorage.removeItem("userRole");
-    alert("Session expired or invalid login. Please log in again.");
-    window.location.href = "/";
-    return;
-  }
-
-  let headerContent = `
-    <header class="header">
-      <div class="logo-section">
-        <img src="/assets/images/logo/logo.png" alt="logo" class="logo-img">
-        <span class="logo-title">Hospital CMS</span>
+  footer.innerHTML = `
+    <footer class="footer">
+      <div class="footer-logo">
+        <img src="/assets/images/logo/logo.png" alt="logo">
+        <p>&copy; Copyright 2025. All Rights Reserved by Hospital CMS.</p>
       </div>
-      <nav>
+      <div class="footer-columns">
+        <div class="footer-column">
+          <h4>Company</h4>
+          <a href="#">About</a>
+          <a href="#">Careers</a>
+          <a href="#">Press</a>
+        </div>
+        <div class="footer-column">
+          <h4>Support</h4>
+          <a href="#">Account</a>
+          <a href="#">Help Center</a>
+          <a href="#">Contact Us</a>
+        </div>
+        <div class="footer-column">
+          <h4>Legals</h4>
+          <a href="#">Terms &amp; Conditions</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Licensing</a>
+        </div>
+      </div>
+    </footer>
   `;
-
-  if (role === "admin") {
-    headerContent += `
-      <button id="addDocBtn" class="adminBtn" onclick="openModal('addDoctor')">Add Doctor</button>
-      <a href="#" onclick="logout()">Logout</a>`;
-  } else if (role === "doctor") {
-    headerContent += `
-      <a href="/doctorDashboard/${token}">Home</a>
-      <a href="#" onclick="logout()">Logout</a>`;
-  } else if (role === "patient") {
-    headerContent += `
-      <button id="patientLogin" class="adminBtn">Login</button>
-      <button id="patientSignup" class="adminBtn">Sign Up</button>`;
-  } else if (role === "loggedPatient") {
-    headerContent += `
-      <a href="/pages/loggedPatientDashboard.html">Home</a>
-      <a href="/pages/patientAppointments.html">Appointments</a>
-      <a href="#" onclick="logoutPatient()">Logout</a>`;
-  }
-
-  headerContent += `
-      </nav>
-    </header>
-  `;
-
-  headerDiv.innerHTML = headerContent;
-  attachHeaderButtonListeners();
 }
 
-function attachHeaderButtonListeners() {
-  const patientLoginBtn = document.getElementById("patientLogin");
-  if (patientLoginBtn) {
-    patientLoginBtn.addEventListener("click", () => openModal("patientLogin"));
-  }
-
-  const patientSignupBtn = document.getElementById("patientSignup");
-  if (patientSignupBtn) {
-    patientSignupBtn.addEventListener("click", () => openModal("patientSignup"));
-  }
-}
-
-function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("userRole");
-  window.location.href = "/";
-}
-
-function logoutPatient() {
-  localStorage.removeItem("token");
-  localStorage.setItem("userRole", "patient");
-  window.location.href = "/pages/patientDashboard.html";
-}
-
-renderHeader();
+renderFooter();
