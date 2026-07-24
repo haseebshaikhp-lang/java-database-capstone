@@ -1,62 +1,31 @@
-// appointmentRecordService.js
 import { API_BASE_URL } from "../config/config.js";
-const APPOINTMENT_API = `${API_BASE_URL}/appointments`;
 
+const APPOINTMENT_API = API_BASE_URL + "/appointments";
 
-//This is for the doctor to get all the patient Appointments
 export async function getAllAppointments(date, patientName, token) {
-  const response = await fetch(`${APPOINTMENT_API}/${date}/${patientName}/${token}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch appointments");
+  try {
+    const name = patientName || "null";
+    const response = await fetch(${APPOINTMENT_API}/${date}/${name}/${token});
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.appointments || data || [];
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
+    return [];
   }
-
-  return await response.json();
 }
 
 export async function bookAppointment(appointment, token) {
   try {
-    const response = await fetch(`${APPOINTMENT_API}/${token}`, {
+    const response = await fetch(${APPOINTMENT_API}/${token}, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(appointment)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(appointment),
     });
-
     const data = await response.json();
-    return {
-      success: response.ok,
-      message: data.message || "Something went wrong"
-    };
+    return { success: response.ok, message: data.message };
   } catch (error) {
-    console.error("Error while booking appointment:", error);
-    return {
-      success: false,
-      message: "Network error. Please try again later."
-    };
-  }
-}
-
-export async function updateAppointment(appointment, token) {
-  try {
-    const response = await fetch(`${APPOINTMENT_API}/${token}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(appointment)
-    });
-
-    const data = await response.json();
-    return {
-      success: response.ok,
-      message: data.message || "Something went wrong"
-    };
-  } catch (error) {
-    console.error("Error while booking appointment:", error);
-    return {
-      success: false,
-      message: "Network error. Please try again later."
-    };
+    console.error("Error booking appointment:", error);
+    return { success: false, message: "Failed to book appointment" };
   }
 }
