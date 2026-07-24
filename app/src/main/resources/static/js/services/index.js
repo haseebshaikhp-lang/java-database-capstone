@@ -3,6 +3,7 @@ import { API_BASE_URL } from "../config/config.js";
 
 const ADMIN_API = API_BASE_URL + '/admin';
 const DOCTOR_API = API_BASE_URL + '/doctor/login';
+const PATIENT_API = API_BASE_URL + '/patient/login';
 
 // Called by the role-selection buttons (Admin / Doctor / Patient)
 window.selectRole = function (role) {
@@ -11,7 +12,7 @@ window.selectRole = function (role) {
   } else if (role === 'doctor') {
     openModal('doctorLogin');
   } else if (role === 'patient') {
-    openModel('patientLogin');
+    openModal('patientLogin');
   }
 };
 
@@ -47,7 +48,7 @@ window.adminLoginHandler = async function () {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      window.location.href = `/adminDashboard/${data.token}`;
+      window.location.href = /adminDashboard/${data.token};
     } else {
       alert('Invalid credentials!');
     }
@@ -73,7 +74,7 @@ window.doctorLoginHandler = async function () {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      window.location.href = `/doctorDashboard/${data.token}`;
+      window.location.href = /doctorDashboard/${data.token};
     } else {
       alert('Invalid credentials!');
     }
@@ -81,4 +82,30 @@ window.doctorLoginHandler = async function () {
     alert('Something went wrong. Please try again later.');
     console.error('Doctor login error:', error);
   }
-}
+};
+
+window.patientLoginHandler = async function () {
+  try {
+    const email = document.getElementById('patientEmail').value;
+    const password = document.getElementById('patientPassword').value;
+
+    const patient = { email, password };
+
+    const response = await fetch(PATIENT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patient)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      window.location.href = /patientDashboard/${data.token};
+    } else {
+      alert('Invalid credentials!');
+    }
+  } catch (error) {
+    alert('Something went wrong. Please try again later.');
+    console.error('Patient login error:', error);
+  }
+};
