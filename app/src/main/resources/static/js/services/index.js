@@ -1,85 +1,33 @@
-import { openModal } from "../components/modals.js";
-import { API_BASE_URL } from "../config/config.js";
-import { selectRole } from "../render.js";
+// index.js - role selection logic for the landing page (index.html)
 
-const ADMIN_API = API_BASE_URL + "/admin";
-const DOCTOR_API = API_BASE_URL + "/doctor/login";
+import { patientLogin } from "./patientServices.js";
 
-window.onload = function () {
-  const adminBtn = document.getElementById("adminLogin");
-  if (adminBtn) {
-    adminBtn.addEventListener("click", () => {
-      openModal("adminLogin");
-    });
-  }
+window.selectRole = function (role) {
+  localStorage.setItem("userRole", role);
 
-  const doctorBtn = document.getElementById("doctorLogin");
-  if (doctorBtn) {
-    doctorBtn.addEventListener("click", () => {
-      openModal("doctorLogin");
-    });
-  }
-
-  const patientBtn = document.getElementById("patient-btn");
-  if (patientBtn) {
-    patientBtn.addEventListener("click", () => {
-      selectRole("patient");
-    });
+  if (role === "admin") {
+    openModal("adminLogin");
+  } else if (role === "doctor") {
+    openModal("doctorLogin");
+  } else if (role === "patient") {
+    // Patients land straight on their dashboard; login/signup happens from there
+    window.location.href = "/pages/patientDashboard.html";
   }
 };
 
-window.adminLoginHandler = async function () {
-  const username = document.getElementById("adminUsername").value;
-  const password = document.getElementById("adminPassword").value;
+document.addEventListener("submit", async (e) => {
+  if (e.target && e.target.id === "patientLoginForm") {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
 
-  const admin = { username, password };
-
-  try {
-    const response = await fetch(ADMIN_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(admin),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-      selectRole("admin");
-    } else {
-      alert("Invalid credentials!");
+    try {
+      const { token } = await patientLogin(email, password);
+      localStorage.setItem("token", token);
+      localStorage.setItem("userRole", "loggedPatient");
+      window.location.href = "/pages/loggedPatientDashboard.html";
+    } catch (err) {
+      showAlert("Invalid email or password.");
     }
-  } catch (error) {
-    console.error(error);
-    alert("Something went wrong!");
   }
-};
-
-window.doctorLoginHandler = async function () {
-  const email = document.getElementById("doctorEmail").value;
-  const password = document.getElementById("doctorPassword").value;
-
-  const doctor = { email, password };
-
-  try {
-    const response = await fetch(DOCTOR_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(doctor),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-      selectRole("doctor");
-    } else {
-      alert("Invalid credentials!");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Something went wrong!");
-  }
-};
+});
