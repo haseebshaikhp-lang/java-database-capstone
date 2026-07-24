@@ -11,7 +11,7 @@ window.selectRole = function (role) {
   } else if (role === 'doctor') {
     openModal('doctorLogin');
   } else if (role === 'patient') {
-    window.location.href = '/pages/patientDashboard.html';
+    openModel('patientLogin');
   }
 };
 
