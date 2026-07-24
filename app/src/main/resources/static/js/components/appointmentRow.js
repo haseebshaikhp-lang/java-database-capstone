@@ -1,19 +1,15 @@
-// appointmentRow.js
-export function getAppointments(appointment) {
-  const tr = document.createElement("tr");
+// appointmentRow.js - builds a single <tr> for the appointments table
 
-  tr.innerHTML = `
-      <td class="patient-id">${appointment.patientName}</td>
-      <td>${appointment.doctorName}</td>
-      <td>${appointment.date}</td>
-      <td>${appointment.time}</td>
-      <td><img src="../assets/images/edit/edit.png" alt="action" class="prescription-btn" data-id="${appointment.id}"></img></td>
-    `;
-
-  // Attach event listeners
-  tr.querySelector(".prescription-btn").addEventListener("click", () => {
-    window.location.href = `addPrescription.html?id=${patient.id}`;
-  });
-
-  return tr;
+export function createAppointmentRow(appointment) {
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${appointment.id}</td>
+    <td>${appointment.patientName}</td>
+    <td>${formatDate(appointment.date)}</td>
+    <td>${appointment.time}</td>
+    <td>${appointment.status}</td>
+    <td>
+      <button class="dashboard-btn" onclick="editAppointment('${appointment.id}')">Edit</button>
+    </td>`;
+  return row;
 }
