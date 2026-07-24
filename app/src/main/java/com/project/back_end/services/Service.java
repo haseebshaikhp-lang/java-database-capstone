@@ -41,12 +41,12 @@ public class Service {
     }
 
     public ResponseEntity<Map<String, String>> validateToken(String token, String user) {
-        Map<String, String> response = new HashMap<>();
-        if (!tokenService.validateToken(token, user)) {
-            response.put("message", "Invalid or expired token");
-            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        Map<String, String> validationResult = tokenService.validateToken(token, user);
+        if (!validationResult.isEmpty()) {
+            validationResult.put("message", "Invalid or expired token");
+            return new ResponseEntity<>(validationResult, HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new HashMap<>(), HttpStatus.OK);
     }
 
     public ResponseEntity<Map<String, String>> validateAdmin(Admin receivedAdmin) {
