@@ -40,5 +40,3 @@ public class TokenValidationService {
         return token.length() > 10;
     }
 }
-EOF
-echo done
